@@ -17,4 +17,5 @@ from .item_t import Item
 from .list_t import List
 from .term_t import Term
 from .rule_t import Rule
+from .search_t import Search
 from .version import __version__

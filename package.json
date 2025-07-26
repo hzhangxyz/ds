@@ -12,7 +12,7 @@
         "dist/tsds.mjs.map"
     ],
     "scripts": {
-        "emcc": "emcc tsds/ds.cc src/*.cc -Iinclude -lembind -o tsds/ds.mjs --emit-tsd ds.d.mts -gsource-map=inline -O3 -ffast-math -flto -s ALLOW_MEMORY_GROWTH=1",
+        "emcc": "emcc -std=c++20 tsds/ds.cc src/*.cc -Iinclude -lembind -o tsds/ds.mjs --emit-tsd ds.d.mts -gsource-map=inline -O3 -ffast-math -flto -s ALLOW_MEMORY_GROWTH=1",
         "rollup": "rollup --config rollup.config.mjs",
         "build": "run-s emcc rollup",
         "test": "cross-env NODE_OPTIONS='$NODE_OPTIONS --experimental-vm-modules' jest --config=jest.config.mjs",

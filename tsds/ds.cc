@@ -1,4 +1,5 @@
 #include <ds/ds.hh>
+#include <ds/search.hh>
 #include <emscripten/bind.h>
 
 namespace em = emscripten;
@@ -96,6 +97,18 @@ auto rule_match(ds::rule_t* rule_1, ds::rule_t* rule_2, int length) -> std::uniq
     return std::unique_ptr<ds::rule_t>(result);
 }
 
+auto search_add_single(ds::search_t* search, const std::string& text) -> bool {
+    return search->add(text);
+}
+
+auto search_add_multiple(ds::search_t* search, const std::string& text, const std::string& sep) -> ds::length_t {
+    return search->add(text, sep);
+}
+
+auto search_execute(ds::search_t* search, const em::val& callback) -> ds::length_t {
+    return search->execute([&callback](ds::rule_t* candidate) -> bool { return callback(clone(candidate)).as<bool>(); });
+}
+
 EMSCRIPTEN_BINDINGS(ds) {
     em::register_vector<std::uint8_t>("Buffer");
 
@@ -137,4 +150,13 @@ EMSCRIPTEN_BINDINGS(ds) {
     term_t.class_function("ground", term_ground, em::return_value_policy::take_ownership());
     rule_t.class_function("ground", rule_ground, em::return_value_policy::take_ownership());
     rule_t.class_function("match", rule_match, em::return_value_policy::take_ownership());
+
+    auto search_t = em::class_<ds::search_t>("Search");
+    search_t.constructor<ds::length_t, ds::length_t>();
+    search_t.function("set_limit_size", &ds::search_t::set_limit_size);
+    search_t.function("set_buffer_size", &ds::search_t::set_buffer_size);
+    search_t.function("reset", &ds::search_t::reset);
+    search_t.function("add_single", &search_add_single, em::allow_raw_pointers());
+    search_t.function("add_multiple", &search_add_multiple, em::allow_raw_pointers());
+    search_t.function("execute", &search_execute, em::allow_raw_pointers());
 }
