@@ -1,4 +1,6 @@
 #include <ds/ds.hh>
+#include <ds/search.hh>
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
@@ -128,4 +130,13 @@ PYBIND11_MODULE(ds, m) {
     term_t.def_static("ground", term_ground);
     rule_t.def_static("ground", rule_ground);
     rule_t.def_static("match", rule_match);
+
+    auto search_t = py::class_<ds::search_t>(m, "Search");
+    search_t.def(py::init<ds::length_t, ds::length_t>());
+    search_t.def("set_limit_size", &ds::search_t::set_limit_size);
+    search_t.def("set_buffer_size", &ds::search_t::set_buffer_size);
+    search_t.def("reset", &ds::search_t::reset);
+    search_t.def("add_single", py::overload_cast<std::string_view>(&ds::search_t::add));
+    search_t.def("add_multiple", py::overload_cast<std::string_view, std::string_view>(&ds::search_t::add));
+    search_t.def("execute", &ds::search_t::execute);
 }
